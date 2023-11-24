@@ -1,0 +1,9 @@
+include:
+  - project: 'mia-care/pipelines-templates'
+    file: 'samd/unit-tests/maven/maven-template.yml'
+
+default:
+  image: maven:3-jdk-11
+
+variables:
+  IMAGE_NAME: mia-care-platform-development/springboot-template

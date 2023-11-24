@@ -1,0 +1,4 @@
+#!/bin/bash
+. "$(dirname -- "$0")/_/husky.sh"
+
+./scripts/prepare_commit_message.sh $1
