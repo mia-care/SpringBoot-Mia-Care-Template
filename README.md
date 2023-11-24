@@ -1,105 +1,142 @@
-# springboot-template
+# Springboot Template walkthrough
 
-Welcome to Java SpringBoot template service for Mia-Platform!
+[![Build Status][github-actions-svg]][github-actions]
 
-## How to develop this service
+This walkthrough will explain you how to correctly create a microservice from a Springboot Template using our DevOps Console.
 
-This example jus expose hello endpoint.
+## Current Version
 
-### Run locally
+This example is currently based on Java SE 11 (LTS)
 
-Before running the service on your local machine you need to prepare the required environment variables
+## Create a microservice
 
-```bash
-cp default.env local.env
-set -a; source local.env
-```
+In order to do so, access to [Mia-Platform DevOps Console](https://console.cloud.mia-platform.eu/login), create a new project and go to the **Design** area.  
+From the Design area of your project select _Microservices_ and then create a new one, you have now reached [Mia-Platform Marketplace](https://docs.mia-platform.eu/development_suite/api-console/api-design/marketplace/)!  
+In the marketplace you will see a set of Examples and Templates that can be used to set-up microservices with a predefined and tested function.  
 
-To run locally this example just run the following command
+For this walkthrough select the following example: **Springboot Template**.
+Give your microservice the name you prefer, in this walkthrough we'll refer to it with the following name: **my-springboot-service-name**. Then, fill the other required fields and confirm that you want to create a microservice.  
+A more detailed description on how to create a Microservice can be found in [Microservice from template - Get started](https://docs.mia-platform.eu/development_suite/api-console/api-design/custom_microservice_get_started/#2-service-creation) section of Mia-Platform documentation.
 
-```bash
-mvn spring-boot:run
-```
+> :warning:
+> Please once the service is installed in your project verify **Probes** confiugration, boot time of Springboot applications may be long
+> so you might want to propertly tune readiness and liveness probes.
 
-To change server port
+## Remove status probes
 
-```bash
-mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8000
-```
+In order to run this example correctly, it is necessary to remove the default probes of your microservice. To do so, go to the table *Microservice configuration* of the newly created microservice *my-springboot-service-name* in the section *Probes*. Once here, delete both the default readiness and liveness paths.
 
-To launch tests locally
+## Expose an endpoint to your microservice
 
-```bash
-mvn test
-```
+In order to access to your new microservice it is necessary to create an endpoint that targets it.  
+In particular, in this walkthrough you will create an endpoint to your microservice *my-springboot-service-name*. To do so, from the Design area of your project select _Endpoints_ and then create a new endpoint.
+Now you need to choose a path for your endpoint and to connect this endpoint to your microservice. Give to your endpoint the following path: **/springboot-template**. Then, specify that you want to connect your endpoint to a microservice and, finally, select *my-springboot-service-name*.  
+Step 3 of [Microservice from template - Get started](https://docs.mia-platform.eu/development_suite/api-console/api-design/custom_microservice_get_started/#3-creating-the-endpoint) section of Mia-Platform documentation will explain in detail how to create an endpoint from the DevOps Console.
 
-To build it
+## Save your changes
 
-```bash
-mvn clean package
-```
+After having created an endpoint to your microservice you should save the changes that you have done to your project in the DevOps console.  
+Remember to choose a meaningful title for your commit (e.g "created service my_springboot_service_name"). After some seconds you will be prompted with a popup message which confirms that you have successfully saved all your changes.  
+Step 4 of [Microservice from template - Get started](https://docs.mia-platform.eu/development_suite/api-console/api-design/custom_microservice_get_started/#4-save-the-project) section of Mia-Platform documentation will explain how to correctly save the changes you have made on your project in the DevOps console.
 
-To force mvn package update
+## Deploy
 
-```bash
-mvn clean install -U
-```
+Once all the changes that you have made are saved, you should deploy your project through the DevOps Console. Go to the **Deploy** area of the DevOps Console.  
+Once here select the environment and the branch you have worked on and confirm your choices clicking on the *deploy* button. When the deploy process is finished you will receveive a pop-up message that will inform you.  
+Step 5 of [Microservice from template - Get started](https://docs.mia-platform.eu/development_suite/api-console/api-design/custom_microservice_get_started/#5-deploy-the-project-through-the-api-console) section of Mia-Platform documentation will explain in detail how to correctly deploy your project.
 
-# Tag Project
+## Try it
 
-### Tag new project version
-
-Please use the `tag.sh` to update the `pom.xml` project version and commit release to git.
-
-Respect the following syntax to invoke the script:
+Now, if you copy/paste the following url in the search bar of your broser (remember to replace `<YOUR_PROJECT_HOST>` with the real host of your project):
 
 ```shell
-    bash tag.sh [options] [rc]
+https://<YOUR_PROJECT_HOST>/springboot-template/
 ```
 
-According to [semver](https://semver.org/), *options* could be:
+you should see a *Whitelabel Error Page*. This behaviour is expected since this template has no routes defined.
 
-* _major_ version when you make incompatible API changes
-* _minor_ version when you add functionality in a backwards-compatible manner
-* _patch_ version when you make backwards-compatible bug fixes.
+Wonderful! You are now ready to start customizing your service! Read next section to learn how.
 
-According to Mia-Platform release process *rc* could be:
+## Look inside your repository
 
-* _rc_ add `-rc` to your release tag
-* omitted
+Go back to _Microservices_, select *my-springboot-service-name* and access its git repository from the DevOps Console.  
+Inside this repository you will find a [directory](https://github.com/mia-platform-marketplace/SpringBoot-Custom-Plugin-Template/tree/master/src/main/java/eu/miaplatform/customplugin/springboot) where you can find most of the source code of the template that you have created.
 
-### Promote `rc` release
+## Add a Welcome route
 
-When your service is ready to production you can promote your rc version invoking the scritp with `promote` option.
+Add to this directory a file named **WelcomeController.java** with the following content:
+
+```java
+
+package eu.miaplatform.customplugin.springboot;
+
+import eu.miaplatform.customplugin.springboot.Welcome;
+import eu.miaplatform.customplugin.springboot.CPController;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@Api(value = "welcomeController")
+public class WelcomeController extends CPController {
+
+  @GetMapping("/")
+  @ApiOperation(value = "welcome")
+  @ResponseBody
+  public Welcome sayWelcome() {
+    return new Welcome("Welcome");
+  }
+
+}
+```
+
+As you can see from the above snippet of code, you have imported class *CPController* from [custom-plugin-java-springboot](https://github.com/mia-platform/custom-plugin-java-springboot), a library developed by Mia-Platform that contains configurations and functions useful for the setup of your Springboot service.
+
+In line
+
+```java
+return new Welcome("Welcome");
+```
+
+you are creating an instance of a class called **Welcome**. You should now define what this class does in another file. In the same directory as before, create a file and call it **Welcome.java**. Copy/paste in it the following lines:
+
+```java
+package eu.miaplatform.customplugin.springboot;
+
+public class Welcome {
+
+    public String message;
+
+    public Welcome(String message) {
+        this.message = message;
+    }
+}
+```
+
+After committing these changes to your repository, you can go back to Mia Platform DevOps Console.  
+Go to the **Deploy** area of the DevOps Console and deploy your project in a similar way to what you have done before modifying your git repository.
+
+## Try it again
+
+Once the deploy process is finished, go back to
 
 ```shell
-    bash tag.sh promote
+https://<YOUR_PROJECT_HOST>/springboot-template/
 ```
 
-### Push changes
-
-Don't forget to push commit and tag:
+or type the following in your terminal:
 
 ```shell
-git push
-git push --tags
+curl https://<YOUR_PROJECT_HOST>/springboot-template/
 ```
 
-### Examples
+What you should see now is a very simple welcome message:
 
-Assuming your current version is `v1.2.3`
+```json
+{"message":"Welcome"}
+```
 
-|command   | result  |
-|---|---|
-|`bash tag.sh major`   |`v2.0.0`   |
-|`bash tag.sh minor`   |`v1.3.0`   |
-|`bash tag.sh patch`   |`v1.2.4`   |
-|`bash tag.sh major rc`   |`v2.0.0-rc`   |
-|`bash tag.sh minor rc`   |`v1.3.0-rc`   |
-|`bash tag.sh patch rc`   |`v1.2.4-rc`   |
+Congratulations! You have successfully learnt how to use our Springboot Template on the DevOps Console!
 
-Assuming your current version is `v1.2.3-rc`
-
-|command   | result  |
-|---|---|
-|`bash tag.sh promote`   |`v1.2.3`|
+[github-actions]: https://github.com/mia-platform-marketplace/SpringBoot-Custom-Plugin-Template/actions
+[github-actions-svg]: https://github.com/mia-platform-marketplace/SpringBoot-Custom-Plugin-Template/workflows/Java%20CI%20with%20Maven/badge.svg
