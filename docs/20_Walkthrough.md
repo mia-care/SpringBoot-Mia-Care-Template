@@ -52,11 +52,11 @@ Moreover, for the same traceability requirement, also the commit messages should
 - The `<implementation-task-id>` is the identifier of the implementation task. Usually, it is the Jira story code;
 - The `<commit-description>` is the description of the commit.
 
-If the branch has been named correctly, the implementation task identifier is inserted automatically in the commit message. Therefore, when you run the command `git commit -m "message"`, the commit message is automatically created as `[<implementation-task-id>] message`. The automatic insertion of the implementation task identifier is performed by [jira-prepare-commit-msg](https://github.com/bk201-/jira-prepare-commit-msg).
+If the branch has been named correctly, the implementation task identifier is inserted automatically in the commit message. Therefore, when you run the command `git commit -m "message"`, the commit message is automatically created as `[<implementation-task-id>] message`.
 
 You can customize the branch naming convention by modifying the bash script that checks the branch name. In particular, you need to modify the regex in the `./scripts/check-branch-naming.sh` with your convention. You can also disable the check by removing the run of the `check-branch-naming.sh` bash script directly in the `./.husky/pre-commit` file.
 
-Moreover, you can remove the automatic insertion of the implementation task identifier by removing the run of the `npx jira-prepare-commit-msg` command directly in the `./.husky/prepare-commit-msg` file.
+Moreover, you can remove the automatic insertion of the implementation task identifier by removing the run of the `./scripts/prepare_commit_message.sh $1` command directly in the `./.husky/prepare-commit-msg` file. You can also customize the commit message, you need to modify the `./prepare_commit_message.sh` script.
 
 ## Deploy
 
