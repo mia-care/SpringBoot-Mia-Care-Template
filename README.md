@@ -39,6 +39,25 @@ After having created an endpoint to your microservice you should save the change
 Remember to choose a meaningful title for your commit (e.g "created service my_springboot_service_name"). After some seconds you will be prompted with a popup message which confirms that you have successfully saved all your changes.  
 Step 4 of [Microservice from template - Get started](https://docs.mia-platform.eu/development_suite/api-console/api-design/custom_microservice_get_started/#4-save-the-project) section of Mia-Platform documentation will explain how to correctly save the changes you have made on your project in the DevOps console.
 
+### GitOps
+
+Usually, to start creating new features on a microservice, you need to create a branch. Due to the native support of this template to the SaMD development, the branch name should follow a specific convention, that is need to enhance traceability. The traceability is required by the IEC 62304 regulation for the SaMD development. The tool used for the branch naming check is [JHusky](https://github.com/Dathin/JHusky).
+
+By default, the pattern for the branch naming convention is: `<type>-<implementation-task-id>-<description>`. Example: `feat-MC-1-login-endpoint`.
+- The `<type>` part is related to the type of the implementation. The possible options are: feat, fix and doc;
+- The `<implementation-task-id>` is the identifier of the implementation task. Usually, it is the Jira story code;
+- The `<description>` is the description of the story. It should be a short recap of the story.
+
+Moreover, for the same traceability requirement, also the commit messages should follow a specific convention, that is the following: `[<implementation-task-id>] <commit-description>`. Example: `[MC-1] Added login endpoint`.
+- The `<implementation-task-id>` is the identifier of the implementation task. Usually, it is the Jira story code;
+- The `<commit-description>` is the description of the commit.
+
+If the branch has been named correctly, the implementation task identifier is inserted automatically in the commit message. Therefore, when you run the command `git commit -m "message"`, the commit message is automatically created as `[<implementation-task-id>] message`.
+
+You can customize the branch naming convention by modifying the bash script that checks the branch name. In particular, you need to modify the regex in the `./scripts/check-branch-naming.sh` with your convention. You can also disable the check by removing the run of the `check-branch-naming.sh` bash script directly in the `./.husky/pre-commit` file.
+
+Moreover, you can remove the automatic insertion of the implementation task identifier by removing the run of the `./scripts/prepare_commit_message.sh $1` command directly in the `./.husky/prepare-commit-msg` file. You can also customize the commit message, you need to modify the `./prepare_commit_message.sh` script.
+
 ## Deploy
 
 Once all the changes that you have made are saved, you should deploy your project through the DevOps Console. Go to the **Deploy** area of the DevOps Console.  
